@@ -30,9 +30,5 @@ describe 'Cell' do
 			cell.solve
 			expect(cell.value).to eq 3
 		end
-
-		it 'can get the unique values of its neighbours' do
-
-		end
 	end
 end
