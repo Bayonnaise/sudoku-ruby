@@ -6,6 +6,15 @@ class Grid
 
 	attr_reader :cells
 
+	def assign_starting_values(puzzle)
+		puzzle = convert_to_array(puzzle)
+		(0..80).each { |i| @cells[i].value = puzzle[i] }
+	end
+
+	def convert_to_array(puzzle)
+		puzzle.split('').collect { |str| str.to_i }.to_a
+	end
+
 	def solve
 		outstanding_before = outstanding_cells
 		no_more_solvable = false
@@ -15,19 +24,21 @@ class Grid
 			no_more_solvable = (outstanding_before == outstanding_cells)
 			outstanding_before = outstanding_cells
 		end
+
+		try_harder unless solved?
 	end
 
-	def solve_iteration
-		assign_neighbours
-		@cells.each(&:solve)
+	def solved?
+		@cells.all?(&:filled_in?)
 	end
 
 	def outstanding_cells
 		@cells.count { |cell| !cell.filled_in? }
 	end
 
-	def solved?
-		@cells.all?(&:filled_in?)
+	def solve_iteration
+		assign_neighbours
+		@cells.each(&:solve)
 	end
 
 	def assign_neighbours
@@ -39,11 +50,42 @@ class Grid
 		end
 	end
 
+	def first_unsolved
+		@cells.detect{ |cell| !cell.filled_in? }
+	end
+
+	def try_harder
+		blank_cell = first_unsolved
+
+		blank_cell.candidates.each do |candidate|
+			blank_cell.assume(candidate)
+			board = replicate
+			board.solve
+			steal_solution(board) and return if board.solved?
+		end
+	end
+
+	def replicate
+		board = ""
+		@cells.each do |cell|
+			if cell.assumed?
+				board += cell.assumed_value.to_s
+			else
+				board += cell.value.to_s
+			end
+		end
+		Grid.new(board)
+	end
+
+	def steal_solution(other_grid)
+		@cells = other_grid.cells
+	end
+
 	def solution
 		@cells.map(&:value)*""
 	end
 
-	def inspect
+	def display
 		@cells.each_with_index do |cell, index|
 			print "#{cell.value} "
 			puts if [8,17,26,35,44,53,62,71,80].include?(index)
@@ -51,15 +93,6 @@ class Grid
 	end
 
 	private
-
-	def assign_starting_values(puzzle)
-		puzzle = convert_to_array(puzzle)
-		(0..80).each { |i| @cells[i].value = puzzle[i] }
-	end
-
-	def convert_to_array(puzzle)
-		puzzle.split('').collect { |str| str.to_i }.to_a
-	end
 
 	def get_row(index)
 		@cells.slice(index - index % 9, 9)

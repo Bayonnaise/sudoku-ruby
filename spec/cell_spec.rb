@@ -11,7 +11,7 @@ describe 'Cell' do
 		end
 	end
 
-	context 'solving' do
+	context 'solving easy sudoku' do
 		it 'can be filled_in' do
 			cell.value = 5
 			expect(cell).to be_filled_in
@@ -29,6 +29,14 @@ describe 'Cell' do
 			cell.candidates = [3]
 			cell.solve
 			expect(cell.value).to eq 3
+		end
+	end
+
+	context 'solving hard sudoku' do
+		it 'can assume a value' do
+			cell.assume(6)
+			expect(cell.assumed_value).to eq 6
+			expect(cell).to be_assumed
 		end
 	end
 end
