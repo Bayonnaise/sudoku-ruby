@@ -5,13 +5,13 @@ Objectives
 --
 Build a test-driven Sudoku solver in Ruby. It should accept a Sudoku starting grid as an 81-digit string...
 
-```
+```ruby
 "015003002000100906270068430490002017501040380003905000900081040860070025037204600"
 ```
 
 ...and return a solved string...
 
-```
+```ruby
 "615493872348127956279568431496832517521746389783915264952681743864379125137254698" 
 ```
 
@@ -21,7 +21,7 @@ Status: Complete
 --
 For easy Sudoku puzzles, the solve method loops through each cell, examining its neighbours and whittling down the candidates through deduction.
 
-```
+```ruby
 def solve
 	unsolved_count_before = unsolved_count
 	no_more_solvable_cells = false
@@ -38,7 +38,7 @@ end
 
 Hard Sudoku puzzles with multiple solutions are solved using recursion. After exhausting the solve method it calls advanced_solve, which assumes the value of an unsolved cell and recursively calls solve again. It 'steals' the first solved grid it discovers, and ends the cycle.
 
-```
+```ruby
 def advanced_solve
 	first_unsolved_cell.candidates.each do |candidate|
 		first_unsolved_cell.assume(candidate)
@@ -57,7 +57,7 @@ Tools
 How to run
 --
 
-```
+```shell
 git clone https://github.com/Bayonnaise/sudoku-ruby.git
 cd sudoku-ruby
 irb
@@ -69,7 +69,7 @@ grid.display
 How to test
 --
 
-```
+```shell
 git clone https://github.com/Bayonnaise/sudoku-ruby.git
 cd sudoku-ruby
 rspec
