@@ -26,33 +26,33 @@ describe 'Grid' do
 		let(:grid) { Grid.new(easy_puzzle) }
 
 		it 'can show each cell its neighbours' do
-			grid.assign_neighbours
+			grid.update_all_neighbours
 			expect(grid.cells[0].neighbours.size).to eq 20
 			expect(grid.cells[80].neighbours.size).to eq 20
 		end
 
 		it 'can solve a cell' do
-			grid.assign_neighbours
+			grid.update_all_neighbours
 			grid.cells[0].solve
 			expect(grid.cells[0].value).to eq 6
 			expect(grid.cells[0]).to be_filled_in
 		end
 
 		it 'can get the number of outstanding cells' do
-			expect(grid.outstanding_cells).to eq 41
+			expect(grid.unsolved_count).to eq 41
 		end
 
 		it 'can perform one iteration of solving cells' do
-			outstanding_before = grid.outstanding_cells
+			unsolved_count_before = grid.unsolved_count
 			grid.solve_iteration
-			expect(grid.outstanding_cells).to be < outstanding_before
+			expect(grid.unsolved_count).to be < unsolved_count_before
 		end
 
     it "can solve the puzzle" do
       expect(grid.solved?).to be false
       grid.solve
       expect(grid.solved?).to be true
-      expect(grid.solution).to eq('615493872348127956279568431496832517521746389783915264952681743864379125137254698')
+      expect(grid.solution_string).to eq('615493872348127956279568431496832517521746389783915264952681743864379125137254698')
     	grid.display
     end
   end
@@ -61,18 +61,18 @@ describe 'Grid' do
   	let(:grid) { Grid.new(hard_puzzle) }
 
   	it 'can find the first unsolved cell' do
-  		expect(grid.first_unsolved).to eq grid.cells[1]
+  		expect(grid.first_unsolved_cell).to eq grid.cells[1]
   	end
 
   	it 'can replicate a board with an assumed value' do
   		grid.cells[1].assume(1)
-  		new_grid = grid.replicate
+  		new_grid = grid.replicate_with_assumed_values
   		expect(new_grid.cells[1].value).to eq 1
   	end
 
   	it 'can steal the solution from another board' do
   		grid2 = Grid.new('9' * 81)
-  		grid.steal_solution(grid2)
+  		grid.steal_solution_from(grid2)
   		expect(grid.cells[50].value).to eq 9
   	end
 
@@ -84,9 +84,9 @@ describe 'Grid' do
     end
   end
 
-  context 'solving impossible sudoko' do
+  context 'solving really hard sudoko' do
   	it 'can solve an empty grid' do
-  		grid = Grid.new("0" * 81)
+  		grid = Grid.new('0' * 81)
   		expect(grid.solved?).to be false
       grid.solve
       expect(grid.solved?).to be true

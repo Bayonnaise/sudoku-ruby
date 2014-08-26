@@ -1,84 +1,82 @@
 class Grid
-	def initialize(puzzle)
+	def initialize(puzzle_string)
 		@cells = Array.new(81) { Cell.new }
-		assign_starting_values(puzzle)
+		assign_starting_values_from(puzzle_string)
 	end
 
 	attr_reader :cells
 
 	def solve
-		outstanding_before = outstanding_cells
-		no_more_solvable = false
+		unsolved_count_before = unsolved_count
+		no_more_solvable_cells = false
 
-		until solved? || no_more_solvable
+		until solved? || no_more_solvable_cells
 			solve_iteration
-			no_more_solvable = (outstanding_before == outstanding_cells)
-			outstanding_before = outstanding_cells
+			no_more_solvable_cells = (unsolved_count_before == unsolved_count)
+			unsolved_count_before = unsolved_count
 		end
 
-		try_harder unless solved?
+		advanced_solve unless solved?
 	end
 
 	def solved?
-		@cells.all?(&:filled_in?)
+		cells.all?(&:filled_in?)
 	end
 
-	def outstanding_cells
-		@cells.count { |cell| !cell.filled_in? }
+	def unsolved_count
+		cells.reject(&:filled_in?).count
 	end
 
 	def solve_iteration
-		assign_neighbours
-		@cells.each(&:solve)
+		update_all_neighbours
+		cells.each(&:solve)
 	end
 
-	def assign_neighbours
-		@cells.each_with_index do |cell, index|
-			cell.neighbours += get_row(index)
-			cell.neighbours += get_column(index)
-			cell.neighbours += get_box(index)
-			remove_self_and_duplicates(cell)
+	def update_all_neighbours
+		cells.each_with_index do |cell, index|
+			cell.neighbours += neighbours_in_row_at(index)
+			cell.neighbours += neighbours_in_column_at(index)
+			cell.neighbours += neighbours_in_box_at(index)
+			remove_self_and_duplicate_neighbours_for(cell)
 		end
 	end
 
-	def first_unsolved
-		@cells.detect{ |cell| !cell.filled_in? }
-	end
-
-	def try_harder
-		blank_cell = first_unsolved
-
-		blank_cell.candidates.each do |candidate|
-			blank_cell.assume(candidate)
-			board = replicate
-			board.solve
-			steal_solution(board) and return if board.solved?
+	def advanced_solve
+		first_unsolved_cell.candidates.each do |candidate|
+			first_unsolved_cell.assume(candidate)
+			test_grid = replicate_with_assumed_values
+			test_grid.solve
+			steal_solution_from(test_grid) and return if test_grid.solved?
 		end
 	end
 
-	def replicate
-		board = ""
-		@cells.each do |cell|
+	def first_unsolved_cell
+		cells.reject(&:filled_in?).first
+	end
+
+	def replicate_with_assumed_values
+		replica_puzzle_string = ""
+		cells.each do |cell|
 			if cell.assumed?
-				board += cell.assumed_value.to_s
+				replica_puzzle_string += cell.assumed_value.to_s
 			else
-				board += cell.value.to_s
+				replica_puzzle_string += cell.value.to_s
 			end
 		end
-		Grid.new(board)
+		Grid.new(replica_puzzle_string)
 	end
 
-	def steal_solution(other_grid)
-		@cells = other_grid.cells
+	def steal_solution_from(test_grid)
+		@cells = test_grid.cells
 	end
 
-	def solution
+	def solution_string
 		@cells.map(&:value)*""
 	end
 
 	def display
 		puts "Solution:"
-		@cells.each_with_index do |cell, index|
+		cells.each_with_index do |cell, index|
 			print "#{cell.value} "
 			puts if [8,17,26,35,44,53,62,71,80].include?(index)
 		end
@@ -86,48 +84,45 @@ class Grid
 
 	private
 
-	def assign_starting_values(puzzle)
-		puzzle = convert_to_array(puzzle)
-		(0..80).each { |i| @cells[i].value = puzzle[i] }
+	def assign_starting_values_from(puzzle_string)
+		puzzle_array = make_array_from(puzzle_string)
+		(0..80).each { |i| cells[i].value = puzzle_array[i] }
 	end
 
-	def convert_to_array(puzzle)
-		puzzle.split('').collect { |str| str.to_i }.to_a
+	def make_array_from(puzzle_string)
+		puzzle_string.split('').collect { |str| str.to_i }.to_a
 	end
 
-	def get_row(index)
-		@cells.slice(index - index % 9, 9)
+	def neighbours_in_row_at(index)
+		cells.slice(index - index % 9, 9)
 	end
 
-	def get_column(index)
-		@cells.drop(index % 9).each_slice(9).map(&:first)
+	def neighbours_in_column_at(index)
+		cells.drop(index % 9).each_slice(9).map(&:first)
 	end
 
-	def get_box(index)
-		box = []
-		box_row, box_col = locate_box(index)
-
-		box_row.each do |row|
-			box << @cells[row * 9 + box_col.first, 3]
-		end
-
-		return box.flatten
-	end
-
-	def locate_box(index)
-		row = (index - index % 9) / 9
+	def neighbours_in_box_at(index)
+		row = (index / 9)
 		col = index % 9
-
 		triplets = [[0,1,2], [3,4,5], [6,7,8]]
+
 		triplets.each do |triplet|
 			row = triplet if triplet.include?(row)
 			col = triplet if triplet.include?(col)
 		end
 
-		return row, col
+		retrieve_box_cells_at(row, col)
 	end
 
-	def remove_self_and_duplicates(cell)
+	def retrieve_box_cells_at(row, col)
+		box = []
+		row.each do |cell|
+			box << @cells[cell * 9 + col.first, 3]
+		end
+		box.flatten
+	end
+
+	def remove_self_and_duplicate_neighbours_for(cell)
 		cell.neighbours.delete(cell)
 		cell.neighbours.uniq!
 	end

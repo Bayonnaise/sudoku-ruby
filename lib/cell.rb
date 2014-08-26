@@ -6,23 +6,24 @@ class Cell
 		@assumed_value = 0
 	end
 
-	attr_accessor :value, :neighbours, :candidates, :assumed_value
+	attr_accessor :value, :neighbours, :candidates
+	attr_reader :assumed_value
 
 	def filled_in?
-		@value > 0
-	end
-
-	def update_candidates
-		@neighbours.each do |cell|
-			@candidates.delete(cell.value)
-		end
+		value > 0
 	end
 
 	def solve
 		return if filled_in?
 
 		update_candidates
-		@value = @candidates.first if @candidates.length == 1
+		@value = candidates.first if candidates.length == 1
+	end
+
+	def update_candidates
+		neighbours.each do |cell|
+			candidates.delete(cell.value)
+		end
 	end
 
 	def assume(value)
@@ -30,6 +31,6 @@ class Cell
 	end
 
 	def assumed?
-		@assumed_value > 0
+		assumed_value > 0
 	end
 end

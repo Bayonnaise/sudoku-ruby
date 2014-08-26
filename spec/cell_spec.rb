@@ -18,9 +18,7 @@ describe 'Cell' do
 		end
 
 		it 'can check what values are possible' do
-			cell.neighbours << Cell.new(2)
-			cell.neighbours << Cell.new(5)
-			cell.neighbours << Cell.new(9)
+			cell.neighbours += [Cell.new(2), Cell.new(5), Cell.new(9)]
 			cell.update_candidates
 			expect(cell.candidates).to eq [1,3,4,6,7,8]
 		end
