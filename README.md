@@ -3,7 +3,19 @@
 
 Objectives
 --
-Build a test-driven Sudoku solver in Ruby. It should accept a Sudoku starting grid as an 81-digit string (blank cells are 0s) and return a solved string. It should also be able to display the solved grid.
+Build a test-driven Sudoku solver in Ruby. It should accept a Sudoku starting grid as an 81-digit string...
+
+```
+"015003002000100906270068430490002017501040380003905000900081040860070025037204600"
+```
+
+...and return a solved string...
+
+```
+"615493872348127956279568431496832517521746389783915264952681743864379125137254698" 
+```
+
+It should also be able to display the solved grid in the terminal.
 
 Status: Complete
 --
