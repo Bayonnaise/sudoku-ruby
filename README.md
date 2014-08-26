@@ -2,13 +2,15 @@
 
 Objectives
 --
-Build a test-driven Sudoku solver application in Ruby. It should accept a Sudoku grid in the form of an 81-digit string - with blank cells represented as 0s - and return a solution in the same format. It should also be able to display the solved grid.
+Build a test-driven Sudoku solver in Ruby. It should accept a Sudoku grid as an 81-digit string (blank cells are 0s) and return a solution. It should also be able to display the solved grid.
 
-Status: complete
+Status: Complete
 --
-For easy Sudoku puzzles, the solve method loops through each cell, examining its neighbours and whittling down the candidates through simple deduction.
+For easy Sudoku puzzles, the solve method loops through each cell, examining its neighbours and whittling down the candidates through deduction.
 
-For harder Sudoku puzzles, where there are multiple potential solutions, it loops through the simple solve method until it can't solve any more cells. Then it calls the try_harder method, which recursively makes assumptions about unsolved cell values until one leads to a solution down the line. It then steals that solution and ends its cycle.
+For hard Sudoku puzzles with multiple solutions, it exhausts the simple solve method, then calls the try_harder method, which recursively assumes the value of unsolved cells until a solution is reached. It then steals that solution and ends its cycle.
+
+It can also use this method to solve an empty Sudoku grid.
 
 Tools
 --

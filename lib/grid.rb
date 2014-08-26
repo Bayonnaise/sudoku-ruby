@@ -6,15 +6,6 @@ class Grid
 
 	attr_reader :cells
 
-	def assign_starting_values(puzzle)
-		puzzle = convert_to_array(puzzle)
-		(0..80).each { |i| @cells[i].value = puzzle[i] }
-	end
-
-	def convert_to_array(puzzle)
-		puzzle.split('').collect { |str| str.to_i }.to_a
-	end
-
 	def solve
 		outstanding_before = outstanding_cells
 		no_more_solvable = false
@@ -86,6 +77,7 @@ class Grid
 	end
 
 	def display
+		puts "Solution:"
 		@cells.each_with_index do |cell, index|
 			print "#{cell.value} "
 			puts if [8,17,26,35,44,53,62,71,80].include?(index)
@@ -93,6 +85,15 @@ class Grid
 	end
 
 	private
+
+	def assign_starting_values(puzzle)
+		puzzle = convert_to_array(puzzle)
+		(0..80).each { |i| @cells[i].value = puzzle[i] }
+	end
+
+	def convert_to_array(puzzle)
+		puzzle.split('').collect { |str| str.to_i }.to_a
+	end
 
 	def get_row(index)
 		@cells.slice(index - index % 9, 9)
