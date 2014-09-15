@@ -1,4 +1,4 @@
-## Ruby Sudoku solver [![Code Climate](https://codeclimate.com/github/Bayonnaise/sudoku-ruby/badges/gpa.svg)](https://codeclimate.com/github/Bayonnaise/sudoku-ruby) [![Test Coverage](https://codeclimate.com/github/Bayonnaise/sudoku-ruby/badges/coverage.svg)](https://codeclimate.com/github/Bayonnaise/sudoku-ruby)
+##Sudoku solver [![Code Climate](https://codeclimate.com/github/Bayonnaise/sudoku-ruby/badges/gpa.svg)](https://codeclimate.com/github/Bayonnaise/sudoku-ruby) [![Test Coverage](https://codeclimate.com/github/Bayonnaise/sudoku-ruby/badges/coverage.svg)](https://codeclimate.com/github/Bayonnaise/sudoku-ruby)
 
 Objectives
 --
